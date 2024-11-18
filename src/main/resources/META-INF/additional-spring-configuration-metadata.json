@@ -1,0 +1,25 @@
+{
+    "properties": [
+      {
+        "name": "amazon.dynamodb.endpoint",
+        "type": "java.lang.String",
+        "description": "Endpoint do DynamoDB para conexões locais"
+      },
+      {
+        "name": "amazon.dynamodb.region",
+        "type": "java.lang.String",
+        "description": "Região do DynamoDB para conexões locais"
+      },
+      {
+        "name": "aws.access_key_id",
+        "type": "java.lang.String",
+        "description": "Chave de acesso AWS para conexões locais"
+      },
+      {
+        "name": "aws.secret_access_key",
+        "type": "java.lang.String",
+        "description": "Chave secreta AWS para conexões locais"
+      }
+    ]
+  }
+  

@@ -1,0 +1,59 @@
+# Configurações Gerais
+.DS_Store
+.idea/
+*.iml
+*.class
+*.log
+*.swp
+*.tmp
+
+# Configurações do Maven
+/target/
+!/src/main/resources/
+
+# Logs
+logs/
+*.log
+*.out
+
+# Arquivos de Sistema
+*.bak
+*.swp
+*.swo
+Thumbs.db
+
+# Configurações do IntelliJ IDEA
+*.ipr
+*.iws
+*.idea/
+.idea
+*.iml
+
+# Arquivos do Eclipse
+.project
+.classpath
+.settings/
+
+# Arquivos do NetBeans
+nbproject/private/
+nbbuild/
+build/
+dist/
+
+# Configurações do VSCode
+.vscode/
+*.code-workspace
+
+# Configurações do DynamoDB Local
+DynamoDBLocal_lib/
+dynamodb_local_latest.zip
+
+# Credenciais Sensíveis
+application.properties
+application.yml
+.env
+
+# Arquivos Temporários
+*.tmp
+*.bak
+*.swp
