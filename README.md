@@ -43,9 +43,9 @@ super-herois-marvel-api ├── src │ ├── main │ │ ├── java/
 
 1. **Baixar o DynamoDB Local**
 
-wget <https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip>
+    wget <https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip>
 
-2.**Executar o DynamoDB Local**
+2. **Executar o DynamoDB Local**
 
 java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
 
@@ -56,9 +56,17 @@ java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
     git clone <https://github.com/IOVASCON/super-herois-marvel-api.git>
     cd super-herois-marvel-api
 
-2. Instalar Dependências:
+2. Compilar o Projeto
 
-    mvn clean install
+    .mvn clean install
+
+3. Empacotar o Projeto
+
+    ./mvnw clean package
+
+4. Executar a Aplicação
+
+    java -jar target/super-herois-marvel-api-1.0-SNAPSHOT.jar
 
 ## Executar o Projeto
 
@@ -68,9 +76,9 @@ java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
 
 2. Acessar a API:
 
-- URL base: <http://localhost:8000>
+- URL base: <http://localhost:8080>
 
-⚙️ Configurações Importantes
+⚙️ **Configurações Importantes**
 
 Arquivo application.properties
 
@@ -83,7 +91,7 @@ aws.secret_access_key=fakeSecretKey
 
 ## Porta do servidor
 
-server.port=8000
+server.port=8080
 
 ## Configurações do Spring Boot
 
@@ -91,33 +99,42 @@ spring.application.name=super-herois-marvel-api
 spring.main.allow-bean-definition-overriding=true
 
 🛠️ Configuração do DynamoDB Local
-Criando a Tabela no DynamoDB
+
+## Criando a Tabela no DynamoDB
 
 A tabela é configurada automaticamente pelo arquivo HeroesTable.java. Após iniciar o projeto, a tabela será criada no DynamoDB Local com os seguintes atributos:
 
-    Tabela: Heroes
-    Chave Primária: id (tipo String)
+1. Tabela: Heroes
+2. Chave Primária: id (tipo String)
 
-Dados Iniciais
+## Dados Iniciais
 
 Dados fictícios são inseridos no DynamoDB Local automaticamente através da classe HeroesData.java.
 
-📖 Aprendizados
+🚀 **Imagens do Desenvolvimento do Projeto**
 
-    Configuração de um banco de dados NoSQL local com DynamoDB.
-    Uso do Spring WebFlux para criar uma API reativa.
-    Gerenciamento de dependências com Maven.
-    Boas práticas na estruturação de projetos Spring Boot.
+![Aplicação Iniciada com Sucesso](src/images/Aplicacao_Iniciada_Sucesso_Porta8080.PNG)
+![Banco de Dados Rodando](src/images/DynamoDB_Local_Rodando.PNG)
+![Gerando o Pacote](src/images/Limpando_Reconstruindo_Projeto.PNG)
+![Gerando MANIFEST.MF](src/images/Confirmando_Adicao_MANIFEST_MF.PNG)
 
-🚀 Próximos Passos
+📖 **Aprendizados**
 
-    Implementar testes unitários e de integração.
-    Adicionar documentação Swagger para a API.
-    Configurar a API para ser implantada em um ambiente de produção.
+1. Configuração de um banco de dados NoSQL local com DynamoDB.
+2. Uso do Spring WebFlux para criar uma API reativa.
+3. Gerenciamento de dependências com Maven.
+4. Boas práticas na estruturação de projetos Spring Boot.
 
-🤝 Contribuições
+🚀 **Próximos Passos**
+
+1. Implementar testes unitários e de integração.
+2. Adicionar documentação Swagger para a API.
+3. Configurar a API para ser implantada em um ambiente de produção.
+
+🤝 **Contribuições**
 
 Sinta-se à vontade para contribuir com melhorias para este projeto. Basta abrir uma issue ou enviar um pull request.
-📜 Licença
+
+📜 **Licença**
 
 Este projeto está licenciado sob a MIT License. Consulte o arquivo LICENSE para mais informações.
