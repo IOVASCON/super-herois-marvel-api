@@ -38,7 +38,7 @@ Segue um relato estruturado das principais dificuldades e erros encontrados no d
 - **Solução**:
   - Baixamos e executamos o DynamoDB Local com o comando:
     java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
-  - Garantimos que as propriedades no `application.properties` estavam apontando corretamente para `http://localhost:8000`.
+  - Garantimos que as propriedades no `application.properties` estavam apontando corretamente para `http://localhost:8080`.
 
 ---
 
@@ -98,7 +98,75 @@ Segue um relato estruturado das principais dificuldades e erros encontrados no d
 
 ---
 
-## **10. Erros de Compilação no `pom.xml`**
+## **10. Erros de Bean no Repositório HeroesRepository
+
+    Problema: O repositório HeroesRepository não era reconhecido corretamente devido à incompatibilidade do @EnableScan.
+    Solução:
+        Revisamos a anotação @EnableScan e o uso de CrudRepository para garantir compatibilidade.
+        Reestruturamos o código para aderir às práticas do Spring Data DynamoDB.
+
+---
+
+## **11. Ajuste do Arquivo HeroesConstant
+
+    Problema: O projeto não encontrava a constante HEROES_TABLE_NAME, gerando erros ao criar ou acessar a tabela no DynamoDB.
+    Solução:
+        Atualizamos o nome da tabela no arquivo HeroesConstant e verificamos sua consistência em todo o projeto.
+
+---
+
+## **12. Logs e Debugging do Spring Boot
+
+    Problema: Os erros no console não eram claros, dificultando a identificação do problema exato.
+    Solução:
+
+        Ajustamos os níveis de log no application.properties para obter informações mais detalhadas:
+
+      logging.level.root=INFO
+      logging.level.org.springframework=DEBUG
+      logging.level.iovascon.projetando=DEBUG
+
+---
+
+## **13. Persistência de Dados no DynamoDB
+
+    Problema: A tabela Heroes não estava sendo criada corretamente no DynamoDB Local, e os dados fictícios não eram carregados.
+    Solução:
+        Garantimos a criação da tabela com o código apropriado no HeroesTable.
+        Ajustamos o carregamento dos dados fictícios na classe HeroesData.
+
+---
+
+## **14. Adaptações no DynamoDB Local
+
+    Problema: Configurações inadequadas ou ausentes dificultaram a execução do banco de dados local.
+    Solução:
+        Garantimos que o DynamoDB Local estava sendo executado com o comando:
+
+java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+
+Ajustamos as configurações do application.properties para apontar para <http://localhost:8080>.
+
+---
+
+## **15. Erros na Execução da Aplicação
+
+    Problema: O aplicativo falhou ao iniciar devido a conflitos no mapeamento de beans, principalmente no DynamoDBMapper.
+    Solução:
+        Refatoramos as classes de configuração (DynamoDBConfig) para garantir que todos os beans fossem registrados corretamente.
+        Ajustamos o arquivo application.properties para refletir as configurações necessárias.
+
+---
+
+## **16. Arquivo .gitignore
+
+    Problema: Arquivos desnecessários e sensíveis estavam sendo versionados no repositório.
+    Solução:
+        Adicionamos um .gitignore completo para evitar que arquivos temporários, de build e de configuração sensível fossem incluídos no controle de versão.
+
+---
+
+## **17. Erros de Compilação no `pom.xml`**
 
 - **Problema**: Dependências essenciais como `spring-boot-starter-webflux` e `spring-boot-starter-test` não tinham versões especificadas, gerando falhas.
 - **Solução**:
@@ -112,7 +180,7 @@ Segue um relato estruturado das principais dificuldades e erros encontrados no d
 
 ---
 
-## **11. Testes e Logs**
+## **18. Testes e Logs**
 
 - **Problema**: Não havia mensagens de log configuradas adequadamente para rastrear o funcionamento da API.
 - **Solução**:
@@ -122,3 +190,80 @@ Segue um relato estruturado das principais dificuldades e erros encontrados no d
     logging.level.iovascon.projetando=DEBUG
 
 ---
+
+## **19. Erro de Inicialização da API devido ao Netty
+
+    Problema: A classe HttpDecoderConfig do Netty não foi encontrada, causando erros de inicialização da API.
+    Solução:
+        Atualizamos as dependências do Netty no pom.xml para a versão mais recente (4.1.94.Final).
+        Incluímos dependências específicas (netty-handler e netty-codec-http) no dependencyManagement para evitar problemas de compatibilidade.
+
+## **20. Conflitos em Dependências do spring-boot-starter-webflux
+
+    Problema: A dependência spring-boot-starter-webflux trazia uma versão desatualizada do Netty, gerando inconsistências.
+    Solução:
+        Excluímos todas as dependências relacionadas ao Netty da configuração do spring-boot-starter-webflux:
+
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-webflux</artifactId>
+          <version>${spring.boot.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>io.netty</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+
+        Adicionamos manualmente as versões mais recentes do Netty no dependencyManagement.
+
+## **21. Reinstalação de Dependências Corrompidas
+
+    Problema: Dependências corrompidas no repositório local estavam impedindo a execução correta da API.
+    Solução:
+        Executamos o comando:
+
+        mvn dependency:purge-local-repository
+
+        Este comando limpou e forçou o download de todas as dependências novamente.
+
+## **22. Reconstrução de Classes no Padrão Atual
+
+    Problema: Algumas classes (controladores, serviços, e repositórios) não estavam alinhadas ao padrão atual do framework, causando inconsistências na API.
+    Solução:
+        Refatoramos todas as classes para seguir as práticas recomendadas:
+            Usamos anotações apropriadas como @RestController, @Service e @Repository.
+            Implementamos padrões de injeção de dependência usando o @Autowired e construtores.
+            Ajustamos as rotas REST no HeroesController para refletir boas práticas de design.
+
+## **23. Configuração de Logs
+
+    Problema: Logs genéricos dificultavam o rastreamento de problemas durante a execução da API.
+    Solução:
+        Adicionamos níveis de log mais específicos no arquivo application.properties:
+
+        logging.level.root=INFO
+        logging.level.iovascon.projetando=DEBUG
+
+## **24. Suporte ao DynamoDB Local
+
+    Problema: O DynamoDB Local estava em conflito na porta 8000, impedindo a execução simultânea da aplicação.
+    Solução:
+        Alteramos a porta do DynamoDB para 8080 e configuramos o arquivo application.properties para refletir a nova porta:
+
+        dynamodb.endpoint=http://localhost:8080
+
+## **25. Ajustes no Empacotamento da Aplicação
+
+    Problema: Havia confusão no uso dos comandos Maven (clean install vs. clean package) para empacotar e executar a aplicação.
+    Solução:
+        Documentamos o processo:
+            Use ./mvnw clean install para testar, compilar e empacotar o projeto.
+            Use java -jar target/super-herois-marvel-api-1.0-SNAPSHOT.jar para executar o JAR gerado.
+
+## **26. Verificação de Conectividade
+
+    Problema: A API mostrava mensagens de "Conexão Reiniciada" no navegador.
+    Solução:
+        Identificamos que o problema estava na falta de configurações de rede apropriadas e corrigimos as dependências que causavam erros de inicialização no Netty.

@@ -38,16 +38,24 @@ public class HeroesController {
 
     @PostMapping(HEROES_ENDPOINT_LOCAL)
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Heroes> createHero(@RequestBody Heroes heroes) {
+    public Mono<ResponseEntity<Heroes>> createHero(@RequestBody Heroes heroes) {
+        if (heroes.getName() == null || heroes.getName().isEmpty()) {
+            log.error("Invalid Hero: missing name");
+            return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+        }
         log.info("A new Hero was created: {}", heroes.getName());
-        return heroesService.save(heroes);
+        return heroesService.save(heroes)
+                .map(savedHero -> new ResponseEntity<>(savedHero, HttpStatus.CREATED));
     }
 
     @DeleteMapping(HEROES_ENDPOINT_LOCAL + "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<HttpStatus> deleteByIdHero(@PathVariable String id) {
+    public Mono<ResponseEntity<Void>> deleteByIdHero(@PathVariable String id) {
         log.info("Deleting the hero with id {}", id);
         return heroesService.deleteByIdHero(id)
-                .thenReturn(HttpStatus.NO_CONTENT);
+                .thenReturn(new ResponseEntity<Void>(HttpStatus.NO_CONTENT))
+                .onErrorResume(e -> {
+                    log.error("Error deleting hero with id {}: {}", id, e.getMessage());
+                    return Mono.just(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+                });
     }
 }

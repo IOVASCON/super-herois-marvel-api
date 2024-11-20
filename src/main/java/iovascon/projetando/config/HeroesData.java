@@ -1,40 +1,43 @@
 package iovascon.projetando.config;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import iovascon.projetando.constants.HeroesConstant;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
-import jakarta.annotation.PostConstruct;
+import java.util.Map;
 
-@Configuration
+@Component
 public class HeroesData {
 
-        private final DynamoDB dynamoDB;
+        private final DynamoDbClient dynamoDbClient;
 
-        public HeroesData(DynamoDB dynamoDB) {
-                this.dynamoDB = dynamoDB;
+        public HeroesData(DynamoDbClient dynamoDbClient) {
+                this.dynamoDbClient = dynamoDbClient;
         }
 
-        @PostConstruct
-        public void initData() {
-                Table table = dynamoDB.getTable(HeroesConstant.HEROES_TABLE_NAME);
+        public void populateData() {
+                addHero("1", "Mulher Maravilha", "dc comics", 2);
+                addHero("2", "Viúva Negra", "marvel", 2);
+                addHero("3", "Capitã Marvel", "marvel", 2);
+        }
 
-                // Dados fictícios de heróis
-                table.putItem(new Item().withPrimaryKey("id", "2")
-                                .withString("name", "Mulher Maravilha")
-                                .withString("universe", "dc comics")
-                                .withNumber("films", 2));
+        private void addHero(String id, String name, String universe, int films) {
+                try {
+                        Map<String, AttributeValue> item = Map.of(
+                                        "id", AttributeValue.builder().s(id).build(),
+                                        "name", AttributeValue.builder().s(name).build(),
+                                        "universe", AttributeValue.builder().s(universe).build(),
+                                        "films", AttributeValue.builder().n(String.valueOf(films)).build());
 
-                table.putItem(new Item().withPrimaryKey("id", "3")
-                                .withString("name", "Viuva Negra")
-                                .withString("universe", "marvel")
-                                .withNumber("films", 2));
+                        PutItemRequest request = PutItemRequest.builder()
+                                        .tableName("Heroes")
+                                        .item(item)
+                                        .build();
 
-                table.putItem(new Item().withPrimaryKey("id", "4")
-                                .withString("name", "Capitã Marvel")
-                                .withString("universe", "marvel")
-                                .withNumber("films", 2));
+                        dynamoDbClient.putItem(request);
+                        System.out.println("Herói adicionado: " + name);
+                } catch (Exception e) {
+                        System.err.println("Erro ao adicionar herói " + name + ": " + e.getMessage());
+                }
         }
 }

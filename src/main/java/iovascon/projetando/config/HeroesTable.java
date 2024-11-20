@@ -1,40 +1,42 @@
 package iovascon.projetando.config;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-import com.amazonaws.services.dynamodbv2.model.KeyType;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
-import iovascon.projetando.constants.HeroesConstant;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
-import jakarta.annotation.PostConstruct;
-import java.util.Collections;
-
-@Configuration
+@Component
 public class HeroesTable {
 
-    private final DynamoDB dynamoDB;
+    private final DynamoDbClient dynamoDbClient;
 
-    public HeroesTable(DynamoDB dynamoDB) {
-        this.dynamoDB = dynamoDB;
+    public HeroesTable(DynamoDbClient dynamoDbClient) {
+        this.dynamoDbClient = dynamoDbClient;
     }
 
-    @PostConstruct
     public void createTable() {
         try {
-            System.out.println("Criando tabela, aguarde...");
-            Table table = dynamoDB.createTable(
-                    HeroesConstant.HEROES_TABLE_NAME,
-                    Collections.singletonList(new KeySchemaElement("id", KeyType.HASH)),
-                    Collections.singletonList(new AttributeDefinition("id", ScalarAttributeType.S)),
-                    new ProvisionedThroughput(5L, 5L));
-            table.waitForActive();
-            System.out.println("Tabela criada com sucesso: " + table.getDescription().getTableStatus());
+            CreateTableRequest request = CreateTableRequest.builder()
+                    .tableName("Heroes")
+                    .keySchema(KeySchemaElement.builder()
+                            .attributeName("id")
+                            .keyType(KeyType.HASH)
+                            .build())
+                    .attributeDefinitions(AttributeDefinition.builder()
+                            .attributeName("id")
+                            .attributeType(ScalarAttributeType.S)
+                            .build())
+                    .provisionedThroughput(ProvisionedThroughput.builder()
+                            .readCapacityUnits(5L)
+                            .writeCapacityUnits(5L)
+                            .build())
+                    .build();
+
+            dynamoDbClient.createTable(request);
+            System.out.println("Tabela criada com sucesso!");
+        } catch (ResourceInUseException e) {
+            System.out.println("Tabela já existe.");
         } catch (Exception e) {
-            System.err.println("Não foi possível criar a tabela: " + e.getMessage());
+            System.err.println("Erro ao criar a tabela: " + e.getMessage());
         }
     }
 }
